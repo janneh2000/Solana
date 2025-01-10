@@ -1,0 +1,30 @@
+import json
+from solana.rpc.api import Client
+from solana.publickey import PublicKey
+from solana.rpc.types import TokenAccountOpts
+
+# Define constants
+TOKEN_PROGRAM_ID = PublicKey("TokenkegQfeZyiNwAJb2z8WQgfkNYo9dVo2zL2fzFt3F6")  # Replace with your actual token program ID
+SOLANA_RPC_URL = "https://api.mainnet-beta.solana.com"  # Solana RPC URL
+
+# Initialize Solana client
+client = Client(SOLANA_RPC_URL)
+
+# Convert Pubkey to string for JSON serialization
+def pubkey_to_str(obj):
+    if isinstance(obj, PublicKey):
+        return str(obj)
+    raise TypeError(f"Type {type(obj)} not serializable")
+
+# Monitor token transactions
+def monitor_token_transactions():
+    try:
+        # Fetch recent transaction signatures for the given token program ID
+        response = client.get_signatures_for_address(TOKEN_PROGRAM_ID, limit=10)
+        # Use json.dumps with custom serialization
+        print(json.dumps(response, default=pubkey_to_str, indent=4))
+    except Exception as e:
+        print(f"Error fetching transactions: {e}")
+
+# Run the function to monitor transactions
+monitor_token_transactions()
